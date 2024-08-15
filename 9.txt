@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void selectionSort(int arr[], int n) {
+    int i, j, min_idx, temp;
+    for (i = 0; i < n - 1; i++) {
+        min_idx = i;
+        for (j = i + 1; j < n; j++) {
+            if (arr[j] < arr[min_idx]) {
+                min_idx = j;
+            }
+        }
+        temp = arr[min_idx];
+        arr[min_idx] = arr[i];
+        arr[i] = temp;
+    }
+}
+
+void generateRandomArray(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % 100000;
+    }
+}
+
+int main() {
+    srand(time(0)); 
+    FILE *file = fopen("time_vs_n.csv", "w");
+    if (file == NULL) {
+        printf("Error opening file!\n");
+        return 1;
+    }
+
+    fprintf(file, "n,TimeTaken\n"); 
+    int n, step = 5000;
+    for (n = 5000; n <= 50000; n += step) {
+        int *arr = (int *)malloc(n * sizeof(int)); 
+        generateRandomArray(arr, n);
+
+        clock_t start = clock();
+        selectionSort(arr, n);
+        clock_t end = clock();
+
+        double time_taken = ((double)(end - start)) 
+        printf("Time taken to sort %d elements: %f seconds\n", n, time_taken);
+        fprintf(file, "%d,%f\n", n, time_taken);
+
+        free(arr); 
+    }
+
+    fclose(file);
+    return 0;
+}
+
+import matplotlib.pyplot as plt
+import csv
+
+# Initialize lists to hold the data
+n_values = []
+time_values = []
+
+# Read data from the CSV file
+with open('time_vs_n.csv', 'r') as file:
+    reader = csv.reader(file)
+    next(reader)  # Skip the header row
+    for row in reader:
+        n_values.append(int(row[0]))
+        time_values.append(float(row[1]))
+
+# Plotting the data
+plt.plot(n_values, time_values, marker='o', linestyle='-', color='b')
+plt.title('Time Complexity of Selection Sort')
+plt.xlabel('Number of elements (n)')
+plt.ylabel('Time taken (seconds)')
+plt.grid(True)
+plt.show()
+
+
+
+
+
